@@ -4,7 +4,9 @@ namespace GpProject206
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var hostBuilder = CreateHostBuilder(args);
+            
+            hostBuilder.Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -12,6 +14,7 @@ namespace GpProject206
                 .ConfigureWebHostDefaults(webBuilder => {
                     webBuilder.UseStartup<Startup>();
                     webBuilder.UseUrls("http://*:5000");
+                   
                 });
     }
 }

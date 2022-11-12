@@ -19,6 +19,8 @@ namespace GpProject206
 {
     public class Startup
     {
+        public readonly string AllowedSpecificOrigins = "_allowedSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -39,6 +41,19 @@ namespace GpProject206
             services.AddScoped<MemberService>();
             services.AddScoped<OrderService>();
             services.AddScoped<CategoryService>();
+   
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowedSpecificOrigins, policy =>
+                {
+                    policy.WithOrigins(
+                        "http://localhost:19008",
+                        "http://*:19008",
+                        "http://localhost:3000",
+                        "http://*:3000"
+                        );
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +73,7 @@ namespace GpProject206
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseCors(AllowedSpecificOrigins);
         }
     }
 }
