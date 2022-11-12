@@ -10,6 +10,7 @@ namespace GpProject206.Domain
         public string Email { get; set; }
         public string Password { private get; set; }
         public int Point { get; private set; } = 0;
+        public bool IsAdmin { get; private set; } = false;
 
         public bool VerifyPassword(string input) => input == Password;
         public void Update(MemberUpdateObject m)
