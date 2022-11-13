@@ -8,18 +8,36 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 
 namespace GpProject206
 {
+    public class ResponseHeaderAttribute : ActionFilterAttribute
+    {
+        private readonly string _name;
+        private readonly string _value;
+
+        public ResponseHeaderAttribute(string name, string value) =>
+            (_name, _value) = (name, value);
+
+        public override void OnResultExecuting(ResultExecutingContext context)
+        {
+            context.HttpContext.Response.Headers.Add(_name, _value);
+
+            base.OnResultExecuting(context);
+        }
+    }
+
     public class Startup
     {
-        public readonly string AllowedSpecificOrigins = "_allowedSpecificOrigins";
+        public static readonly string AllowSpecificOrigins = "_allowedSpecificOrigins";
 
         public Startup(IConfiguration configuration)
         {
@@ -41,17 +59,33 @@ namespace GpProject206
             services.AddScoped<MemberService>();
             services.AddScoped<OrderService>();
             services.AddScoped<CategoryService>();
-   
+
+            /*services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowSpecificOrigins, policy => policy.AllowAnyOrigin());
+                options.AddPolicy(name: "AllowAnyHeader", policy => policy.AllowAnyHeader());
+                options.AddPolicy(name: "AllowAnyMethod", policy => policy.AllowAnyMethod());
+            });*/
+
+            /*services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder => {
+                    //builder.WithOrigins("http://localhost");
+                    //builder.AllowAnyOrigin();
+                    //builder.AllowAnyOrigin().SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod();
+                    //builder.WithOrigins("http://localhost:3000").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod();
+                    builder.WithOrigins("http://localhost:3000");
+                });
+            });*/
             services.AddCors(options =>
             {
-                options.AddPolicy(name: AllowedSpecificOrigins, policy =>
+                var allowOrigins = Configuration.GetValue<string>("AllowOrigins");
+                options.AddPolicy("CorsPolicy", builder =>
                 {
-                    policy.WithOrigins(
-                        "http://localhost:19008",
-                        "http://*:19008",
-                        "http://localhost:3000",
-                        "http://*:3000"
-                        );
+                    builder.WithOrigins(allowOrigins)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                      .AllowCredentials();
                 });
             });
         }
@@ -70,10 +104,37 @@ namespace GpProject206
 
             app.UseRouting();
 
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-            app.UseCors(AllowedSpecificOrigins);
+
+            /*app.Use((contexto, proximo) =>
+                        {
+                            contexto.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:3000");
+                            return proximo.Invoke();
+                        });*/
+            app.Use(async (context, next) =>
+            {
+
+                context.Response.OnStarting(() =>
+                {
+                    context.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:3000");
+                    return Task.FromResult(0);
+                });
+
+                await next();
+            });
+
+            //app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            //app.UseCors(AllowSpecificOrigins);
+            //app.UseCors("AllowAnyHeader");
+            //app.UseCors("AllowAnyMethod");
+            //app.UseCors("AllowAll");
+            //app.UseCors(x => x.AllowAnyOrigin().SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod());
+            //app.UseCors();
+            app.UseCors("CorsPolicy");
+            app.UseAuthentication();
+            app.UseAuthorization();
+            
         }
     }
 }

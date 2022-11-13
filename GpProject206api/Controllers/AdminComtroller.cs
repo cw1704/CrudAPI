@@ -1,10 +1,12 @@
 ﻿using GpProject206.Domain;
 using GpProject206.Services;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace GpProject206.Controllers
 {
+    [ResponseHeader("Access-Control-Allow-Origin", "http://localhost:3000")]
     [Route("[controller]")]
     [Controller]
     public class AdminController : Controller
