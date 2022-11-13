@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GpProject206.Controllers
 {
-    [ResponseHeader("Access-Control-Allow-Origin", "http://localhost:3000")]
+    [ResponseHeader("Access-Control-Allow-Origin", "*")]
     [Route("[controller]")]
     [Controller]
     public class MemberController : Controller

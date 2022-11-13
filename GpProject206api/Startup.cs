@@ -29,7 +29,7 @@ namespace GpProject206
 
         public override void OnResultExecuting(ResultExecutingContext context)
         {
-            context.HttpContext.Response.Headers.Add(_name, _value);
+            //context.HttpContext.Response.Headers.Add(_name, _value);
 
             base.OnResultExecuting(context);
         }
@@ -37,7 +37,6 @@ namespace GpProject206
 
     public class Startup
     {
-        public static readonly string AllowSpecificOrigins = "_allowedSpecificOrigins";
 
         public Startup(IConfiguration configuration)
         {
@@ -59,35 +58,6 @@ namespace GpProject206
             services.AddScoped<MemberService>();
             services.AddScoped<OrderService>();
             services.AddScoped<CategoryService>();
-
-            /*services.AddCors(options =>
-            {
-                options.AddPolicy(name: AllowSpecificOrigins, policy => policy.AllowAnyOrigin());
-                options.AddPolicy(name: "AllowAnyHeader", policy => policy.AllowAnyHeader());
-                options.AddPolicy(name: "AllowAnyMethod", policy => policy.AllowAnyMethod());
-            });*/
-
-            /*services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(builder => {
-                    //builder.WithOrigins("http://localhost");
-                    //builder.AllowAnyOrigin();
-                    //builder.AllowAnyOrigin().SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod();
-                    //builder.WithOrigins("http://localhost:3000").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod();
-                    builder.WithOrigins("http://localhost:3000");
-                });
-            });*/
-            services.AddCors(options =>
-            {
-                var allowOrigins = Configuration.GetValue<string>("AllowOrigins");
-                options.AddPolicy("CorsPolicy", builder =>
-                {
-                    builder.WithOrigins(allowOrigins)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                      .AllowCredentials();
-                });
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -103,38 +73,8 @@ namespace GpProject206
             //app.UseHttpsRedirection();
 
             app.UseRouting();
-
-
+            app.UseCors(x => x.AllowAnyOrigin().SetIsOriginAllowedToAllowWildcardSubdomains()); // CORS policy block solution, need to place between UseRouting(front) and UseEndpoints(back)
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-            /*app.Use((contexto, proximo) =>
-                        {
-                            contexto.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:3000");
-                            return proximo.Invoke();
-                        });*/
-            app.Use(async (context, next) =>
-            {
-
-                context.Response.OnStarting(() =>
-                {
-                    context.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:3000");
-                    return Task.FromResult(0);
-                });
-
-                await next();
-            });
-
-            //app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-            //app.UseCors(AllowSpecificOrigins);
-            //app.UseCors("AllowAnyHeader");
-            //app.UseCors("AllowAnyMethod");
-            //app.UseCors("AllowAll");
-            //app.UseCors(x => x.AllowAnyOrigin().SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod());
-            //app.UseCors();
-            app.UseCors("CorsPolicy");
-            app.UseAuthentication();
-            app.UseAuthorization();
-            
         }
     }
 }
