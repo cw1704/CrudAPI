@@ -6,8 +6,9 @@ namespace GpProject206.Domain
     {
         //[BsonId]
         //[BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; private set; }
+        public string Id { get; protected set; }
         public DateTime CreationDT { get; private set; }
+        public void SetId(string id) => this.Id = id;
 
         public AMongoEntity()
         {

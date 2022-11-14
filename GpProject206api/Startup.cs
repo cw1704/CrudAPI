@@ -66,14 +66,14 @@ namespace GpProject206
             /*if (env.IsDevelopment())
             {
             }*/
+            app.UseRouting();
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CrudAPI v1"));
 
             //app.UseHttpsRedirection();
 
-            app.UseRouting();
-            app.UseCors(x => x.AllowAnyOrigin().SetIsOriginAllowedToAllowWildcardSubdomains()); // CORS policy block solution, need to place between UseRouting(front) and UseEndpoints(back)
+            app.UseCors(x => x.AllowAnyOrigin().SetIsOriginAllowedToAllowWildcardSubdomains()); // CORS policy block solution, need to place above UseEndpoints(back)
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }

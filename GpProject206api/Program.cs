@@ -13,7 +13,7 @@ namespace GpProject206
                 .ConfigureWebHostDefaults(webBuilder => {
                     webBuilder.UseStartup<Startup>();
                     //webBuilder.UseUrls("http://*:5000");                   
-                    webBuilder.UseUrls("http://*:5000","http://localhost:5000", "http://192.168.1.187:5000");                   
+                    webBuilder.UseUrls("http://*:5000","http://localhost:5000");                   
                     //webBuilder.UseUrls("http://192.168.1.187:5000");                                    
                     //webBuilder.UseUrls("http://localhost:5000");              
                 });

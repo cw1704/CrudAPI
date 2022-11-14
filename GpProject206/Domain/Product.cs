@@ -10,6 +10,7 @@ namespace GpProject206.Domain
         public string Description { get; set; }
         [Range(0, Double.PositiveInfinity)]
         public double Price { get; set; } 
-        public string ImgSrc { get; set; }        
+        public string ImgSrc { get; set; }
+
     }
 }

@@ -26,7 +26,7 @@ namespace GpProject206.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Order data)
         {
-            var promo = await _promo.ReadKey("Code", data.PromotionCode);
+            var promo = await _promo.ReadKey(nameof(Promotion.Code), data.PromotionCode);
             if (!string.IsNullOrEmpty(data.PromotionCode))
                 if (promo == null)
                     return BadRequest("Promotion code invalid.");
@@ -45,8 +45,8 @@ namespace GpProject206.Controllers
             var listed = await _product.ReadListed(data.Items.Select(x => x.ProductId).ToList());
             var sub_totals = data.Items.Select(x => listed.First(y => y.Id == x.ProductId).Price * x.Qty);
             var total = sub_totals.Sum();
-            if (data.TotalPrice != total)
-                return BadRequest("Product price updated. Please try again.");
+            /*if (data.TotalPrice != total)
+                return BadRequest("Product price updated. Please try again.");*/
 
 
             if (promoed.Count == promo.CountLimit - 1)

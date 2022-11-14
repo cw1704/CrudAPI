@@ -12,11 +12,19 @@ namespace GpProject206.Domain
         public int Point { get; private set; } = 0;
         public bool IsAdmin { get; private set; } = false;
 
+        public void SetPoint(int pt) => Point = pt;
         public bool VerifyPassword(string input) => input == Password;
-        public void Update(MemberUpdateObject m)
+        public void Modify(Member m)
         { 
             FristName = m.FristName;
             LastName = m.LastName;            
+            Password = m.Password;
+            Point = m.Point;
+        }
+        public void Modify(MemberUpdateObject m)
+        {
+            FristName = m.FristName;
+            LastName = m.LastName;
             Password = m.NewPassword;
         }
     }

@@ -5,6 +5,7 @@ using DnsClient;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using System.Threading.Tasks;
+using Member = GpProject206.Domain.Member;
 
 namespace GpProject206.Controllers
 {
@@ -13,21 +14,20 @@ namespace GpProject206.Controllers
     [Controller]
     public class MemberController : Controller
     {
-        private readonly MemberService _service;
+        private readonly MemberService _member;
         public MemberController(MemberService member)
         {
-            _service = member;
+            _member = member;
         }
-
 
         [HttpPost("New")]
         public async Task<ActionResult> SignUp([FromBody] Member item)
         {
-            var check = await _service.ReadKey(nameof(Member.Email), item.Email);
+            var check = await _member.ReadKey(nameof(Member.Email), item.Email);
             if (check != null)
                 return BadRequest("This email is already in use.");
 
-            var result = await _service.Create(item);
+            var result = await _member.Create(item);
             if (result != null)
             {
                 return Ok(result);
@@ -38,8 +38,7 @@ namespace GpProject206.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult> Login([FromBody] LoginObject item)
         {
-
-            var result = await _service.ReadKey(nameof(Member.Email), item.Email);
+            var result = await _member.ReadKey(nameof(Member.Email), item.Email);
             if (result.VerifyPassword(item.Password))
             {
                 return Ok(result);
@@ -50,8 +49,7 @@ namespace GpProject206.Controllers
         [HttpGet("Pofile/{id}")]
         public async Task<ActionResult> Profile(string id)
         {
-
-            var result = await _service.ReadId(id);
+            var result = await _member.ReadId(id);
             if (result != null)
             {
                 return Ok(result);
@@ -62,17 +60,28 @@ namespace GpProject206.Controllers
         [HttpPost("Update/{id}")]
         public async Task<ActionResult> Update(string id, [FromBody] MemberUpdateObject item)
         {
-            Member member = await _service.ReadId(id);
+            Member member = await _member.ReadId(id);
 
             if(!member.VerifyPassword(item.CurrentPassword)) return BadRequest("Incorrect password");
 
-            member.Update(item);
-            var result = await _service.Update(member);
+            member.Modify(item);
+            var result = await _member.Update(member);
             if (result != null)
             {
                 return Ok(result);
             }
             return BadRequest();
+        }
+
+        [HttpGet("Member/All")]
+        public async Task<ActionResult> Member_ListAll()
+        {
+            var result = await _member.ReadAll();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return NotFound();
         }
     }
 }
