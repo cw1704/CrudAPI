@@ -73,7 +73,7 @@ namespace GpProject206.Controllers
             return BadRequest();
         }
 
-        [HttpGet("Member/All")]
+        [HttpGet("All")]
         public async Task<ActionResult> Member_ListAll()
         {
             var result = await _member.ReadAll();
