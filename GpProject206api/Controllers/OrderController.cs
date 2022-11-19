@@ -44,10 +44,18 @@ namespace GpProject206.Controllers
 
             var listed = await _product.ReadListed(data.Items.Select(x => x.ProductId).ToList());
             var sub_totals = data.Items.Select(x => listed.First(y => y.Id == x.ProductId).Price * x.Qty);
-            var total = sub_totals.Sum();
-            /*if (data.TotalPrice != total)
-                return BadRequest("Product price updated. Please try again.");*/
+            var p_total = sub_totals.Sum();
+            var total = p_total;
 
+            if (promo != null)
+            {
+                total = total - promo.DirectDeduction;
+                total = total * promo.PercentageDiscount / 100;
+
+            }
+
+            if (data.TotalPrice != total)
+                return BadRequest("Product price updated. Please try again.");
 
             if (promoed.Count == promo.CountLimit - 1)
             {

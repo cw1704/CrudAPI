@@ -30,7 +30,6 @@ namespace GpProject206
         public override void OnResultExecuting(ResultExecutingContext context)
         {
             //context.HttpContext.Response.Headers.Add(_name, _value);
-
             base.OnResultExecuting(context);
         }
     }

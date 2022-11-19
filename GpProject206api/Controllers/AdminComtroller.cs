@@ -1,8 +1,6 @@
 ﻿using GpProject206.Domain;
 using GpProject206.Services;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace GpProject206.Controllers
 {
@@ -28,7 +26,7 @@ namespace GpProject206.Controllers
         }
 
         [HttpPost("Product/New")]
-        public async Task<ActionResult> CreateProduct([FromBody] Product item)
+        public async Task<ActionResult> Product_Create([FromBody] Product item)
         {
             if(!await _cat.IsExist(item.CategoryId)) return BadRequest("No such category.");
 
@@ -41,7 +39,7 @@ namespace GpProject206.Controllers
         }
 
         [HttpPut("Product/{id}")]
-        public async Task<ActionResult> UpdateProduct(string id, [FromBody] Product item)
+        public async Task<ActionResult> Product_Update(string id, [FromBody] Product item)
         {
             item.SetId(id);
             if (!await _menu.IsExist(id)) return BadRequest("No such product.");
@@ -56,7 +54,7 @@ namespace GpProject206.Controllers
         }
 
         [HttpDelete("Product/{id}")]
-        public async Task<ActionResult> DeleteProduct(string id)
+        public async Task<ActionResult> Product_Delete(string id)
         {
             if (!await _menu.IsExist(id)) return BadRequest("No such product.");
 
@@ -65,8 +63,10 @@ namespace GpProject206.Controllers
         }
 
         [HttpPost("Promo")]
-        public async Task<ActionResult> InsertPromo([FromBody] Promotion item)
+        public async Task<ActionResult> Promo_Insert([FromBody] Promotion item)
         {
+            if (await _menu.IsExist(nameof(Promotion.Code), item.Code)) return BadRequest("No such product.");
+
             var result = await _promo.Create(item);
             if (result != null)
             {
@@ -76,7 +76,7 @@ namespace GpProject206.Controllers
         }
 
         [HttpGet("Promo/All")]
-        public async Task<ActionResult> ReadAllPromo()
+        public async Task<ActionResult> Promo_ReadAll()
         {
             var result = await _promo.ReadAll();
             if (result != null)
@@ -87,7 +87,7 @@ namespace GpProject206.Controllers
         }
 
         [HttpPut("Promo/{id}")]
-        public async Task<ActionResult> UpdatePromo(string id, [FromBody] Promotion item)
+        public async Task<ActionResult> Promo_Update(string id, [FromBody] Promotion item)
         {
             item.SetId(id);
             if (!await _promo.IsExist(id)) return BadRequest("No such promotion.");
@@ -101,10 +101,10 @@ namespace GpProject206.Controllers
         }
 
         [HttpDelete("Promo/{id}")]
-        public async Task<ActionResult> DeletePromo(string id, [FromBody] Promotion item)
+        public async Task<ActionResult> Promo_Delete(string id)
         {
-            item.SetId(id);
-            if (!await _promo.IsExist(id)) return BadRequest("No such promotion.");
+            Promotion item = await _promo.ReadId(id);
+            if (item == null) return BadRequest("No such promotion.");
 
             item.CountLimit = -1;
             item.MarkEnded();
@@ -117,7 +117,7 @@ namespace GpProject206.Controllers
         }
 
         [HttpPost("Cat")]
-        public async Task<ActionResult> InsertCat([FromBody] ProductCategory item)
+        public async Task<ActionResult> Cat_Insert([FromBody] ProductCategory item)
         {
             var result = await _cat.Create(item);
             if (result != null)
@@ -128,7 +128,7 @@ namespace GpProject206.Controllers
         }
 
         [HttpPut("Cat/{id}")]
-        public async Task<ActionResult> UpdateCat(string id, [FromBody] ProductCategory item)
+        public async Task<ActionResult> Cat_Update(string id, [FromBody] ProductCategory item)
         {
             item.SetId(id);
             if (!await _cat.IsExist(id)) return BadRequest("No such promotion.");
@@ -142,10 +142,10 @@ namespace GpProject206.Controllers
         }
 
         [HttpDelete("Cat/{id}")]
-        public async Task<ActionResult> DeleteCat(string id)
+        public async Task<ActionResult> Cat_Delete(string id)
         {
             if (!await _cat.IsExist(id)) return BadRequest("No such product.");
-            if (await _menu.ReadKey(nameof(Product.CategoryId), id) != null) return BadRequest("Can't delet if there is product under this category.");
+            if (await _menu.IsExist(nameof(Product.CategoryId), id)) return BadRequest("Can't delet if there is product under this category.");
 
             await _cat.Remove(id);
             return Ok();
@@ -168,7 +168,7 @@ namespace GpProject206.Controllers
         }*/
 
         [HttpDelete("Member/{id}")]
-        public async Task<ActionResult> DeleteMember(string id)
+        public async Task<ActionResult> Member_Delete(string id)
         {
             var result = await _member.ReadId(id);
             if (result != null)

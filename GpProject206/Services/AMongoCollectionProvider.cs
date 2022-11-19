@@ -56,9 +56,16 @@ namespace GpProject206.Services
         {
             await _collection.DeleteOneAsync(t => t.Id == itemId);
         }
+
         public async Task<bool> IsExist(string id)
         {
             return await _collection.CountDocumentsAsync(x => x.Id == id) > 0;
+        }
+
+        public async Task<bool> IsExist(string key, string value)
+        {
+            var filter = Builders<T>.Filter.Eq(key, value);
+            return await _collection.FindAsync(filter).Result.FirstOrDefaultAsync() == null;
         }
 
 
