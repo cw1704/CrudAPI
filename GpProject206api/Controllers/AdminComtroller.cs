@@ -65,7 +65,7 @@ namespace GpProject206.Controllers
         [HttpPost("Promo")]
         public async Task<ActionResult> Promo_Insert([FromBody] Promotion item)
         {
-            if (await _menu.IsExist(nameof(Promotion.Code), item.Code)) return BadRequest("No such product.");
+            if (await _promo.IsExist(nameof(Promotion.Code), item.Code)) return BadRequest("Code duplicated.");
 
             var result = await _promo.Create(item);
             if (result != null)
