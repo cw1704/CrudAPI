@@ -26,18 +26,17 @@ namespace GpProject206.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Order data)
         {
-            var promo = await _promo.ReadKey(nameof(Promotion.Code), data.PromotionCode);
+            Promotion? promo = await _promo.ReadKey(nameof(Promotion.Code), data.PromotionCode);
             if (!string.IsNullOrEmpty(data.PromotionCode))
                 if (promo == null)
-                    return BadRequest("Promotion code invalid.");
+                    return BadRequest("No such promotion code.");
 
-            var promoed = await _order.ReadByPromotions(new[] { data.PromotionCode });
-            if (promo.CountLimit <= promoed.Count)
+            if (promo.IsEnded)
                 return BadRequest("This promotion is already finished.");
 
             if (!string.IsNullOrEmpty(data.MemberId))
                 if (!await _member.IsExist(data.MemberId))
-                    return BadRequest("Member id invalid.");
+                    return BadRequest("Invalid member ID.");
 
             if (data.Items.Count < 1 | data.Items.Any(x => !_product.IsExist(x.ProductId).Result) | data.Items.Any(x=>x.Qty<1))
                 return BadRequest("Invalid items.");
@@ -49,23 +48,21 @@ namespace GpProject206.Controllers
 
             if (promo != null)
             {
-                total = total - promo.DirectDeduction;
-                total = total * promo.PercentageDiscount / 100;
-
+                total -= promo.DirectDeduction;
+                total = Math.Max(0, total * promo.PercentageDiscount / 100.00);
             }
 
             if (data.TotalPrice != total)
                 return BadRequest("Product price updated. Please try again.");
 
-            if (promoed.Count == promo.CountLimit - 1)
+            Order result = await _order.Create(data);
+            if (result != null)
             {
-                promo.MarkEnded();
+                promo.AddAppliedOrders(result.Id);
                 await _promo.Update(promo);
+                return Ok(result);
             }
 
-            var result = await _order.Create(data);
-            if (result != null)
-                return Ok(result);
             return BadRequest();
         }
     }
