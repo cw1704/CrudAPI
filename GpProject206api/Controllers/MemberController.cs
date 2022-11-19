@@ -15,9 +15,11 @@ namespace GpProject206.Controllers
     public class MemberController : Controller
     {
         private readonly MemberService _member;
-        public MemberController(MemberService member)
+        private readonly OrderService _order;
+        public MemberController(MemberService member, OrderService order)
         {
             _member = member;
+            _order = order;
         }
 
         [HttpPost("New")]
@@ -77,6 +79,17 @@ namespace GpProject206.Controllers
         public async Task<ActionResult> Member_ListAll()
         {
             var result = await _member.ReadAll();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return NotFound();
+        }
+
+        [HttpGet("History/{id}")]
+        public async Task<ActionResult> Member_ListHistory(string id)
+        {
+            var result = await _order.Filter(nameof(Order.MemberId), id);
             if (result != null)
             {
                 return Ok(result);
