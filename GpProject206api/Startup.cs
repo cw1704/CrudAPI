@@ -73,7 +73,7 @@ namespace GpProject206
 
             //app.UseHttpsRedirection();
 
-            app.UseCors(x => x.AllowAnyOrigin().SetIsOriginAllowedToAllowWildcardSubdomains()); // CORS policy block solution, need to place above UseEndpoints(back)
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowedToAllowWildcardSubdomains()); // CORS policy block solution, need to place above UseEndpoints(back)
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }

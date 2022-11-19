@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace GpProject206.Controllers
 {
-    //[ResponseHeader("Access-Control-Allow-Origin", "*")]
+    [ResponseHeader("Access-Control-Allow-Origin", "*")]
+    [ResponseHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE")]
+    [ResponseHeader("Access-Control-Allow-Credentials", "true")]
+    [ResponseHeader("Access-Control-Allow-Headers", "Content-Type, Accept")]
     [Route("[controller]")]
     [Controller]
     public class AdminController : Controller
