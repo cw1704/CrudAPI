@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GpProject206.Domain;
@@ -28,6 +29,11 @@ namespace GpProject206.Services
         public async Task<IList<T>> ReadAll() 
         {
             return await _collection.FindAsync(new BsonDocument()).Result.ToListAsync();
+        }
+        public async Task<IList<T>> Filter(string key, string value)
+        {
+            var filter = Builders<T>.Filter.Eq(key, value);
+            return await _collection.FindAsync(filter).Result.ToListAsync();
         }
         public async Task<IList<T>> ReadListed(IList<string> p) 
         {
