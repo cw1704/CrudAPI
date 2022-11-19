@@ -62,8 +62,7 @@ namespace GpProject206.Controllers
         [HttpGet("Promo")]
         public async Task<ActionResult> GetAllPromo()
         {
-            var all = await _promo.ReadAll();
-            var result = all.Where(x => !x.IsEnded);
+            var result = await _promo.Filter(nameof(Promotion.IsEnded), "false");
             if (result != null)
             {
                 return Ok(result);
