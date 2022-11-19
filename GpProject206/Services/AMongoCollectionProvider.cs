@@ -65,7 +65,7 @@ namespace GpProject206.Services
         public async Task<bool> IsExist(string key, string value)
         {
             var filter = Builders<T>.Filter.Eq(key, value);
-            return await _collection.FindAsync(filter).Result.FirstOrDefaultAsync() == null;
+            return await _collection.FindAsync(filter).Result.FirstOrDefaultAsync() != null;
         }
 
 
