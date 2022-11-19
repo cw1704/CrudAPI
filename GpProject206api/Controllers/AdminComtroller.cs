@@ -16,13 +16,26 @@ namespace GpProject206.Controllers
         private readonly PromotionService _promo;
         private readonly MemberService _member;
         private readonly CategoryService _cat;
+        private readonly OrderService _order;
 
-        public AdminController(ProductService service, PromotionService promo, MemberService member, CategoryService cat)
+        public AdminController(ProductService service, PromotionService promo, MemberService member, CategoryService cat, OrderService order)
         {
             _menu = service;
             _promo = promo;
             _member = member;
             _cat = cat;
+            _order = order;
+        }
+
+        [HttpGet("Order/All")]
+        public async Task<ActionResult> Order_ListAll()
+        {
+            var result = await _order.ReadAll();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return BadRequest();
         }
 
         [HttpPost("Product/New")]
