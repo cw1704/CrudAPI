@@ -13,6 +13,8 @@ namespace GpProject206.Domain
         public double TotalPrice { get; set; } = 0.0;
         public string MemberId { get; set; } = "";
         public string PromotionCode { get; set; } = "";
+        public string Address { get; set; } = "";
+        public string ContactNumber { get; set; } = "";
     }
 
     public class OrderItem
