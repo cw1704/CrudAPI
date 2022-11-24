@@ -28,11 +28,13 @@ namespace GpProject206.Controllers
         {
             Promotion? promo = await _promo.ReadKey(nameof(Promotion.Code), data.PromotionCode);
             if (!string.IsNullOrEmpty(data.PromotionCode))
+            {
                 if (promo == null)
                     return BadRequest("No such promotion code.");
 
-            if (promo.IsEnded)
-                return BadRequest("This promotion is already finished.");
+                if (promo.IsEnded)
+                    return BadRequest("This promotion is already finished.");
+            }
 
             if (!string.IsNullOrEmpty(data.MemberId))
                 if (!await _member.IsExist(data.MemberId))
@@ -58,8 +60,11 @@ namespace GpProject206.Controllers
             Order result = await _order.Create(data);
             if (result != null)
             {
-                promo.AddAppliedOrders(result.Id);
-                await _promo.Update(promo);
+                if (promo != null)
+                {
+                    promo.AddAppliedOrders(result.Id);
+                    await _promo.Update(promo);
+                }
                 return Ok(result);
             }
 
