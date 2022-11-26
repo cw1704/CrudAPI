@@ -30,19 +30,20 @@ namespace GpProject206.Controllers
             if (!string.IsNullOrEmpty(data.PromotionCode))
             {
                 if (promo == null)
-                    return BadRequest("No such promotion code.");
+                    return BadRequest(new ErrorResponse("No such promotion code."));
 
                 if (promo.IsEnded)
-                    return BadRequest("This promotion is already finished.");
+                    return BadRequest(new ErrorResponse("This promotion is already finished."));
             }
 
             if (!string.IsNullOrEmpty(data.MemberId))
                 if (!await _member.IsExist(data.MemberId))
-                    return BadRequest("Invalid member ID.");
+                    return BadRequest(new ErrorResponse("Invalid member ID."));
 
             if (data.Items.Count < 1 | data.Items.Any(x => !_product.IsExist(x.ProductId).Result) | data.Items.Any(x=>x.Qty<1))
-                return BadRequest("Invalid items.");
+                return BadRequest(new ErrorResponse("Invalid items."));
 
+            
             var listed = await _product.ReadListed(data.Items.Select(x => x.ProductId).ToList());
             var sub_totals = data.Items.Select(x => listed.First(y => y.Id == x.ProductId).Price * x.Qty);
             var p_total = sub_totals.Sum();
@@ -50,12 +51,13 @@ namespace GpProject206.Controllers
 
             if (promo != null)
             {
-                total -= promo.DirectDeduction;
-                total = Math.Max(0, total * promo.PercentageDiscount / 100.00);
+                total = Math.Max(0, total - promo.DirectDeduction);
+                total = Math.Max(0, Math.Round(total * promo.PercentageDiscount / 100.00, 2));
             }
 
             if (data.TotalPrice != total)
-                return BadRequest("Product price updated. Please try again.");
+                return BadRequest(new ErrorResponse("Product price updated. Please try again."));
+            
 
             Order result = await _order.Create(data);
             if (result != null)
@@ -68,7 +70,7 @@ namespace GpProject206.Controllers
                 return Ok(result);
             }
 
-            return BadRequest();
+            return BadRequest(new ErrorResponse("Unknown"));
         }
     }
 }

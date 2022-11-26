@@ -27,14 +27,14 @@ namespace GpProject206.Controllers
         {
             var check = await _member.ReadKey(nameof(Member.Email), item.Email);
             if (check != null)
-                return BadRequest("This email is already in use.");
+                return BadRequest(new ErrorResponse("This email is already in use."));
 
             var result = await _member.Create(item);
             if (result != null)
             {
                 return Ok(result);
             }
-            return BadRequest();
+            return NotFound(new ErrorResponse("Nothing from database"));
         }
 
         [HttpPost("Login")]
@@ -45,7 +45,7 @@ namespace GpProject206.Controllers
             {
                 return Ok(result);
             }
-            return NotFound();
+            return NotFound(new ErrorResponse("Nothing from database"));
         }
 
         [HttpGet("Pofile/{id}")]
@@ -56,7 +56,7 @@ namespace GpProject206.Controllers
             {
                 return Ok(result);
             }
-            return NotFound();
+            return NotFound(new ErrorResponse("Nothing from database"));
         }
 
         [HttpPost("Update/{id}")]
@@ -64,7 +64,7 @@ namespace GpProject206.Controllers
         {
             Member member = await _member.ReadId(id);
 
-            if(!member.VerifyPassword(item.CurrentPassword)) return BadRequest("Incorrect password");
+            if(!member.VerifyPassword(item.CurrentPassword)) return BadRequest(new ErrorResponse("Incorrect password"));
 
             member.Modify(item);
             var result = await _member.Update(member);
@@ -72,7 +72,7 @@ namespace GpProject206.Controllers
             {
                 return Ok(result);
             }
-            return BadRequest();
+            return BadRequest(new ErrorResponse("Nothing from database"));
         }
 
         [HttpGet("All")]
@@ -83,7 +83,7 @@ namespace GpProject206.Controllers
             {
                 return Ok(result);
             }
-            return NotFound();
+            return NotFound(new ErrorResponse("Nothing from database"));
         }
 
         [HttpGet("History/{id}")]
@@ -94,7 +94,7 @@ namespace GpProject206.Controllers
             {
                 return Ok(result);
             }
-            return NotFound();
+            return NotFound(new ErrorResponse("Nothing from database"));
         }
     }
 }

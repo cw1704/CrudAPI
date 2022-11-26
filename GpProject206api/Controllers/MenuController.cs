@@ -34,7 +34,7 @@ namespace GpProject206.Controllers
             {
                 return Ok(result);
             }
-            return NotFound();
+            return NotFound(new ErrorResponse("Nothing from database"));
         }
 
         [HttpGet("Cat")]
@@ -45,7 +45,7 @@ namespace GpProject206.Controllers
             {
                 return Ok(result);
             }
-            return NotFound();
+            return NotFound(new ErrorResponse("Nothing from database"));
         }
 
         [HttpGet("Cat/{id}")]
@@ -56,7 +56,7 @@ namespace GpProject206.Controllers
             {
                 return Ok(result.Where(x => x.Id == id));
             }
-            return NotFound();
+            return NotFound(new ErrorResponse("Nothing from database"));
         }
 
         [HttpGet("Promo")]
@@ -67,7 +67,7 @@ namespace GpProject206.Controllers
             {
                 return Ok(result);
             }
-            return NotFound();
+            return NotFound(new ErrorResponse("Nothing from database"));
         }
 
 

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,20 +18,6 @@ using Microsoft.OpenApi.Models;
 
 namespace GpProject206
 {
-    public class ResponseHeaderAttribute : ActionFilterAttribute
-    {
-        private readonly string _name;
-        private readonly string _value;
-
-        public ResponseHeaderAttribute(string name, string value) =>
-            (_name, _value) = (name, value);
-
-        public override void OnResultExecuting(ResultExecutingContext context)
-        {
-            //context.HttpContext.Response.Headers.Add(_name, _value);
-            base.OnResultExecuting(context);
-        }
-    }
 
     public class Startup
     {
