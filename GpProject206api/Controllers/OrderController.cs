@@ -44,6 +44,8 @@ namespace GpProject206.Controllers
                 return BadRequest(new ErrorResponse("Invalid items."));
 
             
+            /*
+            
             var listed = await _product.ReadListed(data.Items.Select(x => x.ProductId).ToList());
             var sub_totals = data.Items.Select(x => listed.First(y => y.Id == x.ProductId).Price * x.Qty);
             var p_total = sub_totals.Sum();
@@ -57,7 +59,7 @@ namespace GpProject206.Controllers
 
             if (data.TotalPrice != total)
                 return BadRequest(new ErrorResponse("Product price updated. Please try again."));
-            
+            */
 
             Order result = await _order.Create(data);
             if (result != null)
